@@ -55,9 +55,6 @@ class Grid():
         return f"<grid.Grid: m={self.m}, n={self.n}>"
 
     def is_sorted(self):
-        """
-        Checks is the current state of the grid is sorte and returns the answer as a boolean.
-        """
         # TODO: implement this function (and remove the line "raise NotImplementedError").
         raise NotImplementedError
 
