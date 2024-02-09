@@ -40,7 +40,7 @@ class Grid():
 
     def __str__(self): 
         """
-        Prints the state of the grid as text.
+        Prints the state of the grid as git push.
         """
         output = f"The grid is in the following state:\n"
         for i in range(self.m): 
