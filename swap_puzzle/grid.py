@@ -56,13 +56,17 @@ class Grid():
 
     def is_sorted(self):
         # TODO: implement this function (and remove the line "raise NotImplementedError").
-        raise NotImplementedError
+        for e, f in self.state, self.initial_state:
+            if e != f:
+                return False
+        return True
 
     def swap(self, cell1, cell2):
-    
-    
         # TODO: implement this function (and remove the line "raise NotImplementedError").
-        raise NotImplementedError
+        i1, j1 = cell1
+        i2, j2 = cell2
+        assert (i1 == i2 and abs(j1-j2) == 1) or (j1 == j2 and abs(i1-i2) == 1)
+        self.state[i1][j1], self.state[i2][j2] = self.state[i2][j2], self.state[i1][j1]  
 
     def swap_seq(self, cell_pair_list):
         """
@@ -75,7 +79,9 @@ class Grid():
             So the format should be [((i1, j1), (i2, j2)), ((i1', j1'), (i2', j2')), ...].
         """
         # TODO: implement this function (and remove the line "raise NotImplementedError").
-        raise NotImplementedError
+        for e in cell_pair_list:
+            c1, c2 = e 
+            self.swap(c1,c2)
 
     @classmethod
     def grid_from_file(cls, file_name): 
