@@ -3,6 +3,7 @@ This is the grid module. It contains the Grid class and its associated methods.
 """
 
 import random
+import matplotlib.pyplot as plt 
 
 class Grid():
     """
@@ -106,5 +107,30 @@ class Grid():
                 initial_state[i_line] = line_state
             grid = Grid(m, n, initial_state)
         return grid
+
+    def trac(self):
+        for i in range(self.n):
+            for j in range(self.m):
+                plt.plot([i, i+1], [j, j], color='black')
+                plt.plot([i, i], [j, j+1], color='black')
+
+        for k in range(self.m):
+            plt.plot([k, k+1], [self.n, self.m], color='black')
+
+        for k in range(self.n):
+            plt.plot([self.m, self.m], [k, k+1], color='black')
+
+
+        for i in range(self.n):
+            for j in range(self.m):
+                plt.text(i + 0.5, j + 0.5, str(self.state[j][i]),color='black', ha='center', va='center', fontsize=12)
+
+        plt.xlim(0, self.m)
+        plt.ylim(0, self.n)
+        plt.gca().invert_yaxis()
+        plt.axis('off')
+
+        plt.show()
+
 
 
