@@ -61,14 +61,8 @@ class Grid():
         raise NotImplementedError
 
     def swap(self, cell1, cell2):
-        """
-        Implements the swap operation between two cells. Raises an exception if the swap is not allowed.
-
-        Parameters: 
-        -----------
-        cell1, cell2: tuple[int]
-            The two cells to swap. They must be in the format (i, j) where i is the line and j the column number of the cell. 
-        """
+    
+    
         # TODO: implement this function (and remove the line "raise NotImplementedError").
         raise NotImplementedError
 
@@ -95,7 +89,7 @@ class Grid():
         file_name: str
             Name of the file to load. The file must be of the format: 
             - first line contains "m n" 
-            - next m lines contain n integers that represent the state of the corresponding cell
+            - next lines contain n integers that represent the state of the corresponding cell
 
         Output: 
         -------
