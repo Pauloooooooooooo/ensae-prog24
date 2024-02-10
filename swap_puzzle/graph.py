@@ -82,23 +82,16 @@ class Graph:
         self.edges.append((node1, node2))
 
     def bfs(self, src, dst): 
-        """
-        Finds a shortest path from src to dst by BFS.  
+        l = [(src, [dst])]
+        while l:
+            noeud, chemin = l.pop(0)
+            if noeud == dst:
+                return chemin
+            for v in self.graph[noeud]:
+                if v not in chemin:
+                    l.append((v, chemin + [v]))
+        return None
 
-        Parameters: 
-        -----------
-        src: NodeType
-            The source node.
-        dst: NodeType
-            The destination node.
-
-        Output: 
-        -------
-        path: list[NodeType] | None
-            The shortest path from src to dst. Returns None if dst is not reachable from src
-        """ 
-        # TODO: implement this function (and remove the line "raise NotImplementedError").
-        raise NotImplementedError
 
     @classmethod
     def graph_from_file(cls, file_name):
