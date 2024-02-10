@@ -56,9 +56,10 @@ class Grid():
 
     def is_sorted(self):
         # TODO: implement this function (and remove the line "raise NotImplementedError").
-        for e, f in self.state, self.initial_state:
-            if e != f:
-                return False
+        for i in range(self.m):
+            for j in range(self.n):
+                if self.state[i][j] != i*self.n + (j+1):
+                    return False
         return True
 
     def swap(self, cell1, cell2):
