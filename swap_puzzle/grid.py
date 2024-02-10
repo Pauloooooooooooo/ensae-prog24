@@ -135,5 +135,47 @@ class Grid():
 
         plt.show()
 
+    def convert(self):
+        """ Permet de convertir une grille en tuple de sorte à ce que les noeuds de notre graphe soient hashable"""
+        l=[]
+        for i in range(self.n):
+            l.append(self.state[i])
+        return tuple(l)
+    
+    def creation_graphe(self):
+
+        """ Permet à partir d'une position donnée de créer un une liste de noeuds de tout les états possibles
+        de sorte à pouvoir créer le graph à l'aide des méthodes implémentées dans la méthode graphe """
+
+        """ On crée également un dico de sorte à faciliter la création des edges plus tard """
+
+        noeuds=[self.state]
+        l=[self.state.convert()]
+        dico={}
+        while noeuds:
+            tmp=noeuds.pop(0)
+            if tmp.is_sorted():
+                return l,dico
+            else:
+                for i in range(self.n):
+                    for j in range(self.m):
+                        tmp1=tmp.swap((i,j),(i,j+1))
+                        tmp2=tmp.swap((i, j),(i+1,j))
+                        dico[tmp.convert()].append(tmp1.convert())
+                        dico[tmp.convert()].append(tmp2.convert())
+                        if tmp1 not in noeuds:
+                            noeuds.append(tmp1)
+                            l.append(tmp1.convert())
+                            tmp1.creation_graphe()
+                        if tmp2 not in noeuds:
+                            noeuds.append(tmp2)
+                            tmp2.creation_graphe()
+                            l.append(tmp2.convert())
+            return l,dico
+
+
+
+
+
 
 
