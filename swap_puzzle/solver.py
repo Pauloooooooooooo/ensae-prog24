@@ -80,18 +80,12 @@ class Solver(Grid):
     def sumtuple(x,y):
         return (x[0]+y[0],x[1]+y[1])
 
-    @staticmethod
-    def find_place(mat,elt):
-        for i, rows in enumerate(mat):
-            if elt in rows:
-                return i, rows.index(elt)
-
-        return None
+  
     
     @staticmethod
     def move_needed(state1,state2):
         """
-        Giving 2 grid that differs from one swap, find the swap they have in common
+        A partir de 2 grilles qui différent d'un swap, on retrouve ce swap.
         """
         state1l = [list(elt) for elt in state1]
         state2l = [list(elt) for elt in state2]
@@ -104,33 +98,31 @@ class Solver(Grid):
             if np.array_equal(g1.state,g2.state):
                 return (cell1,cell2)
             g1.swap(cell1,cell2)
-        raise Exception(f"The 2 grids differs from more than 1 swap {state1} and {state2}")
+        raise Exception(f"Les deux grilles diffèreent de pllus qu'un swap {state1} et {state2}")
 
     
     def possible_moves(self):
         """
-        Return all possible_moves from a state
+        On va récupèrer tout les mouvement possibles à partir d'une grille.
         
-        To each state we have (4*2 + 2*(m-2)*3 + 2*(n-2)*3 + 4*(m-2)(n-2))/2 swaps possibles 
-        Output : [((i1, j1), (i2, j2)), ((i1', j1'), (i2', j2')),.....]
+        On sait qu'a chaque étape, on a au total (4*2 + 2*(m-2)*3 + 2*(n-2)*3 + 4*(m-2)(n-2))/2 swaps possibles 
+        Sortie : [((i1, j1), (i2, j2)), ((i1', j1'), (i2', j2')),.....]
         """
         possible_moves = []
         
         for i in range(0,self.grid.m):
             for j in range(0,self.grid.n):
                 x = (i,j)
-                #print(x)
                 move_close_to_x = [Solver.sumtuple(x,y) for y in directions]
-                #print(move_close_to_x)
+            
                 for t in move_close_to_x:
                     if self.legal_move(x,t) and (t,x) not in possible_moves:
-                        #print(f"On append {(x,t)}")
                         possible_moves.append((x,t))
         return possible_moves
 
-    def build_graph(self):
+    def create_graph(self):
         """
-        On construit un graphe où les noeuds représentent des états de la grille et il exitse une arête si les deux états
+        On crée un graphe où les noeuds représentent des états de la grille et il exitse une arête si les deux états
         son reliés par un swap legal
         
         Sortie : Objet Graph
@@ -164,16 +156,15 @@ class Solver(Grid):
         src = self.grid.hashable_state()
         goal = Grid(self.grid.m,self.grid.n)
         dst = goal.hashable_state()
-        state_path = g.bfs(src,dst)
-        #print(f"state_path = {state_path}") 
-        if state_path == None :
+        etats_successifs = g.bfs(src,dst)
+        if etats_successifs == None :
             return None
-        #we have the list of the different state we need to follow to order the grid
-        #but we want the sequence of swaps, so we are gonna extrat the list of the swap neccessary
-        path = []
-        for i in range(0,len(state_path)-1):
-            state1,state2 = state_path[i],state_path[i+1]
+        #On a obtenu la liste des états succesifs de la grille 
+        #On va maintenant récupérer la séquence de swaps qui ont été faits à partir de cette liste
+        chemin = []
+        for i in range(0,len(etats_successifs)-1):
+            state1,state2 = etats_succesifs[i],etats_successifs[i+1]
             move_needed = Solver.move_needed(state1,state2)
-            path.append(move_needed)
-        return path
+            chemin.append(move_needed)
+        return chemin 
 
