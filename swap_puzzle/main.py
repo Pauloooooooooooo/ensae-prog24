@@ -1,5 +1,6 @@
 from grid import Grid
 from solver import Solver
+from graph import Graph
 
 #g = Grid(2, 3)
 #print(g)
@@ -26,7 +27,5 @@ a = Grid.grid_from_file(graph1)
 #S4 = Solver(4,4,[[5,14,7,16],[1,10,15,4],[13,2,3,12],[9,6,11,8]])
 #print(S4.get_solution())
 
-    """
-    A FAIRE : Calculer la complexité et évaluer le nb de swaps
-    """
-
+g = Graph.graph_from_file("input/graph1.in")
+print(g)

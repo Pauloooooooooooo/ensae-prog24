@@ -81,17 +81,53 @@ class Graph:
         self.nb_edges += 1
         self.edges.append((node1, node2))
 
-    def bfs(self, src, dst): 
-        l = [(src, [dst])]
-        while l:
-            noeud, chemin = l.pop(0)
-            if noeud == dst:
+    def bfs(self, dep, arr): 
+        """
+        Cette fonction effectue un parcours en largeur du graphe afin de déterminer le plus court chemin, avec des arêtes qui valent 
+        toutes 1, entre le noeud de départ "dep" et le noeud d'arrivée "arr".
+
+        Args:
+            dep : noeud de départ
+            arr : noeud d'arrivée
+
+        Returns:
+            chemin : liste des noeuds afin de décrire le chemin à suivre pour aller de "dep" à "arr"
+        """
+        L = [(dep, [arr])]
+        while L != []:
+            noeud, chemin = L.pop(0)
+            if noeud == arr:
                 return chemin
             for v in self.graph[noeud]:
                 if v not in chemin:
-                    l.append((v, chemin + [v]))
+                    L.append((v, chemin + [v]))
         return None
 
+    def bfs_bis(self, dep, arr):
+        cur = dep
+        traitement = [cur]
+        traite = []
+        p = {}
+        while traitement != []:
+            cur = traitement.pop(0)
+            if cur == arr:
+                break
+            for v in self.graph[cur]:
+                if v not in traite:
+                    traitement.append(v)
+                if v not in p.keys():
+                    p[v] = cur
+            traite.append(cur)
+        if traitement == [] and arr != cur:
+            return None
+        else:
+            chemin = [arr]
+            inter = arr
+            while inter != arr:
+                inter = p[inter]
+                chemin.append(inter)
+            return chemin
+    
 
     @classmethod
     def graph_from_file(cls, file_name):
