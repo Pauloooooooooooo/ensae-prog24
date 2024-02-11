@@ -4,6 +4,7 @@ This is the grid module. It contains the Grid class and its associated methods.
 
 import random
 import matplotlib.pyplot as plt 
+import copy
 
 class Grid():
     """
