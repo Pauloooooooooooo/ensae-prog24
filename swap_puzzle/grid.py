@@ -138,7 +138,7 @@ class Grid():
 
     def hashable_state(self):
         """
-        Return a non mutable (hashable) representation of the grid in order to stock it as a node
+        On obtient un état mutable d'une grille pour les noeuds du graphe
         """
         return tuple([tuple(inner_list) for inner_list in self.state])
         
