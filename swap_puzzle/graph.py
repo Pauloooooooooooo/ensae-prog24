@@ -81,7 +81,7 @@ class Graph:
         self.nb_edges += 1
         self.edges.append((node1, node2))
 
-    def bfs(self, dep, arr): 
+    def bfs(self, dep, arr):
         """
         Cette fonction effectue un parcours en largeur du graphe afin de déterminer le plus court chemin, avec des arêtes qui valent 
         toutes 1, entre le noeud de départ "dep" et le noeud d'arrivée "arr".
@@ -93,34 +93,23 @@ class Graph:
         Returns:
             chemin : liste des noeuds afin de décrire le chemin à suivre pour aller de "dep" à "arr"
         """
-        L = [(dep, [arr])]
-        while L != []:
-            noeud, chemin = L.pop(0)
-            if noeud == arr:
-                return chemin
-            for v in self.graph[noeud]:
-                if v not in chemin:
-                    L.append((v, chemin + [v]))
-        return None
-
-    def bfs_bis(self, dep, arr):
         cur = dep
-        traitement = [cur]
-        traite = []
-        p = {}
+        traitement = [cur]                    #on introduit une liste "traitement" et une liste "traite" afin de pouvoir marquer
+        traite = []                           #les noeuds visités, on utilise alors une file
+        p = {}                                #p est un dico dont les clés sont des noeuds du graphe et les valeurs leurs antécédents
         while traitement != []:
             cur = traitement.pop(0)
-            if cur == arr:
+            if cur == arr:                    #on vérifie si le premier élément de la liste des noeuds en cours de traitement ne correspond au  noeud d'arrivée
                 break
-            for v in self.graph[cur]:
+            for v in self.graph[cur]:         #on ajoute tous les voisins du noeud considéré et on les ajoute à traitement s'ils n'ont pas encore été traités
                 if v not in traite:
                     traitement.append(v)
-                if v not in p.keys():
-                    p[v] = cur
+                if v not in p.keys():         #Comme le tri effectué est en largeur, nous sommes sûrs que la première fois que l'on tombera sur le noeud d'arrivée,
+                    p[v] = cur                #nous aurons parcouru le plus court chemin
             traite.append(cur)
-        if traitement == [] and arr != cur:
+        if traitement == [] and arr != cur:   #on traite le cas où il n'existe pas de chemins entre le noeud de départ et celui d'arrivée
             return None
-        else:
+        else:                                 #il ne nous reste plus qu'à restituer le chemin le plus court grâce au dictionnaire p confectionné ci-dessus
             chemin = [arr]
             inter = arr
             while inter != arr:
