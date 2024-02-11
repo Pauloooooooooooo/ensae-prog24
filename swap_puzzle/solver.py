@@ -5,9 +5,19 @@ class Solver(Grid):
     A solver class, to be implemented.
     """
     def __init__(self,m,n,ini):
+        """
+        On a décidé de considérer la classe Solver comme une classe enfant de la classe Grid.
+        Ainsi, à chaque variable de type Solver, sera automatiquement associée une grille.
+        """
         Grid.__init__(self,m,n,ini)
         
     def search(self, elt):
+        """
+        Fonction qui recherche dans la grille les coordonnées de l'élément cherché
+
+        Args:
+            elt : int
+        """
         for i in range(len(self.state)):
             for j in range(len(self.state[i])):
                 if self.state[i][j] == elt:
@@ -22,15 +32,15 @@ class Solver(Grid):
         # NOTE: you can add other methods and subclasses as much as necessary. The only thing imposed is the format of the solution
         #  returned.
         S = []
-        for i in range(1, self.n*self.m +1):
-            l,c = self.search(i)
-            lf = (i-1)//self.n 
+        for i in range(1, self.n*self.m +1):    #on replace les nombres à leurs places dans l'ordre croissant du 1 au n*m ème
+            l,c = self.search(i)                #on cherche tout d'abord la place de l'élément i dans la grille
+            lf = (i-1)//self.n                  #on calcule la place finale que i doit obtenir
             if i%self.n == 0:
                 cf = self.n - 1
             else:
                 cf = i%self.n - 1
-            while cf != c:
-                if cf < c:
+            while cf != c:                      #on commence par replacer i dans sa colonne finale (on commence par les colonnes afin 
+                if cf < c:                      # de ne pas déplacer un élément qui serait déjà à sa place)
                     self.swap((l,c),(l,c-1))
                     S.append(((l,c),(l,c-1)))
                     c = c-1
@@ -38,7 +48,7 @@ class Solver(Grid):
                     self.swap((l,c),(l,c+1))
                     S.append(((l,c),(l,c+1)))
                     c += 1
-            while lf != l:
+            while lf != l:                      #Puis, on attribue à i sa ligne finale
                 if lf < l:
                     self.swap((l,c),(l-1,c))
                     S.append(((l,c),(l-1,c)))
@@ -47,8 +57,19 @@ class Solver(Grid):
                     self.swap((l,c),(l+1,c))
                     S.append(((l,c),(l+1,c)))
                     l += 1
-        return S, self.is_sorted()
+        return S, self.is_sorted()              #On renvoie la liste des swaps effectués et on vérifie par la même occasion que la grille est bien triée
 
+        """
+        Q.3 : 
+        La complexité de la fonction get_solution est en O([n*m]**2)
+        Estimation du nombre de swaps ==> A chaque tour de boucle (boucle for), pour un élément i fixé, on effectue abs(cf[i] - c[i]) + abs(lf[i] - l[i]) swaps,
+        en notant cf[i] et lf[i] (resp c[i] et l[i]) la colonne et la ligne finales de i (la colonne et la ligne initiales de i).
+        Ainsi, nb_tot_swaps = SOMME(i : 1 -> n*m) [abs(cf[i]-c[i]) + abs(lf[i] - l[i])]
+        """
+
+        """_
+        On peut se convaincre grâce à des exemples simples que la longueur de chemins obtenue n'est pas optimale.
+        """
 
     def legal_move(self,x,y):
         i1,j1 = x
