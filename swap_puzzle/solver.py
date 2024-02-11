@@ -129,7 +129,7 @@ class Solver(Grid):
         """
         g = Graph()
         possibles_moves = self.possible_moves()
-        memory = copy.deepcopy(self.grid.state) #Remember the state for putting back the state of the grid at the end of the function
+        memory = copy.deepcopy(self.grid.state) #On retient l'état de la grille de sorte à le remettre à la fin de la fonction
 
         for swap1,swap2 in possibles_moves :
             non_mutable_state = self.grid.hashable_state()
@@ -138,7 +138,7 @@ class Solver(Grid):
                 non_mutable_new_state = self.grid.hashable_state()
                 if (non_mutable_state,non_mutable_new_state) not in g.edges or (non_mutable_new_state,non_mutable_state) not in g.edges: 
                         g.add_edge(non_mutable_state,non_mutable_new_state)
-                self.grid.swap(cell1,cell2) #put back the changement
+                self.grid.swap(cell1,cell2) #on refait le changement
 
             self.grid.swap(swap1,swap2)
             non_mutable_state = self.grid.hashable_state()
