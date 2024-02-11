@@ -29,3 +29,10 @@ a = Grid.grid_from_file(graph1)
 
 g = Graph.graph_from_file("input/graph1.in")
 print(g)
+
+"""
+Pour la question 8, l'idée serait que lorsqu'on parourt le graphe, on ne choisisse uniquement les swaps qui intervertissent 
+deux nombres de sorte à ce que le nombre le plus petit des deux se retrouve avant le plus grand, ceci se ferait en ajoutant
+cette condition dans la fonction legal_move
+mais ce n'est qu'une ébauche d'idée et je pense que l'on peut trouver un contre exemple facilement 
+"""
