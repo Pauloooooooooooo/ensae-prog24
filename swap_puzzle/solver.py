@@ -4,9 +4,9 @@ class Solver(Grid):
     """
     A solver class, to be implemented.
     """
-    def __init__(self,m,n):
-        Grid.__init__(self,m,n,initial_state = [])
-    
+    def __init__(self,m,n,ini):
+        Grid.__init__(self,m,n,ini)
+        
     def search(self, elt):
         for i in range(len(self.state)):
             for j in range(len(self.state[i])):
@@ -29,15 +29,6 @@ class Solver(Grid):
                 cf = self.n - 1
             else:
                 cf = i%self.n - 1
-            while lf != l:
-                if lf < l:
-                    self.swap((l,c),(l-1,c))
-                    S.append(((l,c),(l-1,c)))
-                    l = l-1
-                else:
-                    self.swap((l,c),(l+1,c))
-                    S.append(((l,c),(l+1,c)))
-                    l += 1
             while cf != c:
                 if cf < c:
                     self.swap((l,c),(l,c-1))
@@ -47,4 +38,13 @@ class Solver(Grid):
                     self.swap((l,c),(l,c+1))
                     S.append(((l,c),(l,c+1)))
                     c += 1
+            while lf != l:
+                if lf < l:
+                    self.swap((l,c),(l-1,c))
+                    S.append(((l,c),(l-1,c)))
+                    l = l-1
+                else:
+                    self.swap((l,c),(l+1,c))
+                    S.append(((l,c),(l+1,c)))
+                    l += 1
         return S, self.is_sorted()
