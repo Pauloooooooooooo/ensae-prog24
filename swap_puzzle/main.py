@@ -15,10 +15,10 @@ print(file_name)
 S0 = Solver(2,2,[[2,4],[3,1]])
 
 
-#S1 = Solver(4,2,[[5,2],[3,8],[1,6],[4,7]])
+S1 = Solver(4,2,[[5,2],[3,8],[1,6],[4,7]])
 #print(S1.get_solution())
 
-#S2 = Solver(3,3,[[7,5,3],[1,8,6],[4,2,9]])
+S2 = Solver(3,3,[[7,5,3],[1,8,6],[4,2,9]])
 #print(S2.get_solution())
 
 #S3 = Solver(4,4,[[5,2,7,4],[1,6,3,8],[9,14,15,12],[13,10,11,16]])
@@ -34,5 +34,7 @@ deux nombres de sorte à ce que le nombre le plus petit des deux se retrouve ava
 cette condition dans la fonction legal_move
 mais ce n'est qu'une ébauche d'idée et je pense que l'on peut trouver un contre exemple facilement 
 """
-print(S0)
-print(S0.A())
+print(S2)
+print(S2.A())
+
+
