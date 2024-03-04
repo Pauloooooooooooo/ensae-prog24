@@ -142,7 +142,8 @@ class Grid():
         On obtient un état mutable d'une grille pour les noeuds du graphe
         """
         return tuple([tuple(inner_list) for inner_list in self.state])
-        
+
+
       
 
 

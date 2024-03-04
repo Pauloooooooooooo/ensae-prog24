@@ -1,5 +1,7 @@
 from grid import Grid
+import heapq
 
+directions=[(-1,0),(1,0),(0,1),(0,-1)]
 class Solver(Grid): 
     """
     A solver class, to be implemented.
@@ -10,7 +12,10 @@ class Solver(Grid):
         Ainsi, à chaque variable de type Solver, sera automatiquement associée une grille.
         """
         Grid.__init__(self,m,n,ini)
-        
+    
+    def final(self):
+        return Grid(self.m,self.n)
+
     def search(self, elt):
         """
         Fonction qui recherche dans la grille les coordonnées de l'élément cherché
@@ -74,7 +79,7 @@ class Solver(Grid):
     def legal_move(self,x,y):
         i1,j1 = x
         i2,j2 =y
-        return 0<=i1<self.grid.m and 0<=j1<self.grid.n and 0<=i2<self.grid.m and 0<=j2<self.grid.n and ((i1==i2 and abs(j2-j1)==1) or (j1==j2 and abs(i2-i1)==1))
+        return 0<=i1<self.m and 0<=j1<self.n and 0<=i2<self.m and 0<=j2<self.n and ((i1==i2 and abs(j2-j1)==1) or (j1==j2 and abs(i2-i1)==1))
     
     @staticmethod
     def sumtuple(x,y):
@@ -87,10 +92,10 @@ class Solver(Grid):
         """
         A partir de 2 grilles qui différent d'un swap, on retrouve ce swap.
         """
-        state1l = [list(elt) for elt in state1]
-        state2l = [list(elt) for elt in state2]
-        g1 = Grid(len(state1),len(state1[0]),state1l)
-        g2 = Grid(len(state2),len(state2[0]),state2l)
+        l1 = [list(elt) for elt in state1]
+        l2 = [list(elt) for elt in state2]
+        g1 = Grid(len(state1),len(state1[0]),l1)
+        g2 = Grid(len(state2),len(state2[0]),l2)
         solv = Solver(g1)
         possible_moves = solv.possible_moves()
         for cell1,cell2 in possible_moves:
@@ -98,7 +103,7 @@ class Solver(Grid):
             if np.array_equal(g1.state,g2.state):
                 return (cell1,cell2)
             g1.swap(cell1,cell2)
-        raise Exception(f"Les deux grilles diffèreent de pllus qu'un swap {state1} et {state2}")
+        raise Exception(f"Les deux grilles diffèrent de plus qu'un swap {state1} et {state2}")
 
     
     def possible_moves(self):
@@ -109,9 +114,8 @@ class Solver(Grid):
         Sortie : [((i1, j1), (i2, j2)), ((i1', j1'), (i2', j2')),.....]
         """
         possible_moves = []
-        
-        for i in range(0,self.grid.m):
-            for j in range(0,self.grid.n):
+        for i in range(0,self.m):
+            for j in range(0,self.n):
                 x = (i,j)
                 move_close_to_x = [Solver.sumtuple(x,y) for y in directions]
             
@@ -129,21 +133,21 @@ class Solver(Grid):
         """
         g = Graph()
         possibles_moves = self.possible_moves()
-        memory = copy.deepcopy(self.grid.state) #On retient l'état de la grille de sorte à le remettre à la fin de la fonction
+        memory = copy.deepcopy(self.state) #On retient l'état de la grille de sorte à le remettre à la fin de la fonction
 
         for swap1,swap2 in possibles_moves :
-            non_mutable_state = self.grid.hashable_state()
+            non_mutable_state = self.hashable_state()
             for cell1,cell2 in possibles_moves:
-                self.grid.swap(cell1,cell2)
-                non_mutable_new_state = self.grid.hashable_state()
+                self.swap(cell1,cell2)
+                non_mutable_new_state = self.hashable_state()
                 if (non_mutable_state,non_mutable_new_state) not in g.edges or (non_mutable_new_state,non_mutable_state) not in g.edges: 
                         g.add_edge(non_mutable_state,non_mutable_new_state)
-                self.grid.swap(cell1,cell2) #on refait le changement
+                self.swap(cell1,cell2) #on refait le changement
 
-            self.grid.swap(swap1,swap2)
-            non_mutable_state = self.grid.hashable_state()
+            self.swap(swap1,swap2)
+            non_mutable_state = self.hashable_state()
         
-        self.grid.state = memory
+        self.state = memory
         return g 
 
     def get_solution_graphe(self):
@@ -153,8 +157,8 @@ class Solver(Grid):
         [((i1, j1), (i2, j2)), ((i1', j1'), (i2', j2')), ...]. 
         """
         g = self.build_graph()
-        src = self.grid.hashable_state()
-        goal = Grid(self.grid.m,self.grid.n)
+        src = self.hashable_state()
+        goal = Grid(self.m,self.n)
         dst = goal.hashable_state()
         etats_successifs = g.bfs(src,dst)
         if etats_successifs == None :
@@ -167,6 +171,46 @@ class Solver(Grid):
             move_needed = Solver.move_needed(state1,state2)
             chemin.append(move_needed)
         return chemin 
+
+    def distance(self):
+        dist=0
+        l1 = [list(elt) for elt in self.state]
+        l2 = [list(elt) for elt in self.final().state]
+        for i in range(len(l1)):
+            for j in range(len(l1[0])):
+                if l1[i][j]!=l2[i][j]:
+                    dist+=1
+        return dist
+
+    def A(self):
+        curr=self
+        chemin=[]
+        cheminb =  []
+        vus=[curr.hashable_state()]
+        while  curr.is_sorted() == False:
+            h=[]
+            for elt in curr.possible_moves():
+                neighbor = Solver(curr.m, curr.n, curr.state[:][:])
+                neighbor.swap(elt[0],elt[1])
+                if not (neighbor.hashable_state() in vus):
+                    heapq.heappush(h,(neighbor.distance(),neighbor,elt))    #il compare non pas seulement le prmier, mais aussi le deuxieme elem qui est un Solver 
+                print(h), print(neighbor.state)
+            new=heapq.heappop(h)
+            vus.append(new[1].hashable_state())
+            chemin.append(new[2])
+            curr=new[1]
+        return chemin, curr.state
+
+
+
+
+
+
+
+
+                
+
+
 
 
 
