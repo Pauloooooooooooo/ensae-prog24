@@ -84,8 +84,6 @@ class Solver(Grid):
     @staticmethod
     def sumtuple(x,y):
         return (x[0]+y[0],x[1]+y[1])
-
-  
     
     @staticmethod
     def move_needed(state1,state2):
@@ -182,7 +180,16 @@ class Solver(Grid):
                     dist+=1
         return dist
 
-    def A(self):
+    def manhattan_distance(self):
+        d = 0
+        for i in range(len(self.state)):
+            for j in range(len(self.state[0])):
+                if self.state[i][j] != self.final().state[i][j]:
+                    final_i, final_j = divmod(self.state[i][j] - 1,len(self.state[0]))
+                    d += abs(i - final_i) + abs(j - final_j)
+        return d
+
+    def Astar(self):
         curr=self
         chemin=[]
         cheminb =  []
@@ -197,15 +204,38 @@ class Solver(Grid):
                 #neighbor = Solver(curr.m, curr.n, curr.state[:][:])
                 neighbor.swap(elt[0],elt[1])
                 if not (neighbor.hashable_state() in vus):
-                    heapq.heappush(h,(neighbor.distance(),cpt,neighbor,elt))    #il compare non pas seulement le prmier, mais aussi le deuxieme elem qui est un Solver 
-               # print(h), print(neighbor.state)
+                    heapq.heappush(h,(neighbor.distance(),cpt,neighbor,elt))    #il compare non pas seulement le premier, mais aussi le deuxieme elem qui est un Solver 
+                #print(h), print(neighbor.state)
             new=heapq.heappop(h)
+            print(new[2].state)
             vus.append(new[2].hashable_state())
             chemin.append(new[3])
             curr=new[2]
         return chemin, curr.state
 
-
+    def Astar_improved(self):
+        curr=self
+        chemin=[]
+        cheminb =  []
+        vus=[curr.hashable_state()]
+        while  curr.is_sorted() == False:
+            h=[]
+            cpt = 0 #numéro d'ajout pour éviter les problèmes d'égalité et de comparaison entre Grille dans l'utilisation de heapq
+            for elt in curr.possible_moves():
+                cpt += 1
+                L = [[curr.state[i][j] for j in range(len(curr.state[0]))] for i in range(len(curr.state))]
+                neighbor = Solver(curr.m, curr.n, L)
+                #neighbor = Solver(curr.m, curr.n, curr.state[:][:])
+                neighbor.swap(elt[0],elt[1])
+                if not (neighbor.hashable_state() in vus):
+                    heapq.heappush(h,(neighbor.manhattan_distance(),cpt,neighbor,elt))    #il compare non pas seulement le premier, mais aussi le deuxieme elem qui est un Solver 
+                #print(h), print(neighbor.state)
+            new=heapq.heappop(h)
+            #print(new[2].state)
+            vus.append(new[2].hashable_state())
+            chemin.append(new[3])
+            curr=new[2]
+        return chemin, curr.state
 
 
 
