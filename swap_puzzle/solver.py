@@ -5,6 +5,7 @@ import random
 import copy
 from itertools import permutations
 import numpy as np
+from collections import deque
 
 directions=[(-1,0),(1,0),(0,1),(0,-1)]
 class Solver(Grid): 
@@ -213,6 +214,39 @@ class Solver(Grid):
             chemin.append(move_needed)
         return chemin 
 
+    def get_optimal_solution_graph(self):
+        # Convertir l'état initial en tuple pour une utilisation dans les ensembles
+        start_state = self.hashable_state()
+        # Créer une liste pour garder une trace des états déjà visités
+        visited = []
+        # Créer une file pour parcourir les nœuds dans l'ordre BFS
+        queue = [(start_state,[])]
+        states = [start_state]
+        
+        # Tant que la file n'est pas vide, continuer le BFS
+        while queue:
+            node, path = queue.popleft()  # Retirer le premier nœud de la file
+            if node in visited:  # Vérifier si le nœud a déjà été visité
+                continue
+            visited.append(node)  # Marquer le nœud comme visité
+            if self.is_sorted(node):  # Vérifier si le nœud est dans l'état final trié
+                for i in range(len(path)):
+                    states.append(path[i][1])
+                swap__seq = self.swap_seq_from_path(states)
+                return states
+                 # Retourner la séquence de swap
+            s = Solver(len(node),len(node[0]),node)
+            # Obtenir les voisins du nœud actuel
+            moves = s.possible_moves()
+            # Ajouter les voisins non visités à la file avec le chemin mis à jour
+            for c1,c2 in moves:
+                s.swap(c1,c2)
+                if s.hashable_state not in visited:
+                    queue.append((s.hashable_state, path + [(node, s.hashable_state)]))
+                s.swap(c1,c2)
+        
+        return None  # Retourner None si aucune solution n'est trouvée
+
     def distance(self):
         dist=0
         l1 = [list(elt) for elt in self.state]
@@ -280,35 +314,6 @@ class Solver(Grid):
             curr=new[2]
         return chemin, curr.state
 
-
-
-"""
-    def create_graph(self):
-      
-        On crée un graphe où les noeuds représentent des états de la grille et il exitse une arête si les deux états
-        son reliés par un swap legal
-        
-        Sortie : Objet Graph
-      
-        g = Graph()
-        possibles_moves = self.generate_possible_states()
-        memory = copy.deepcopy(self.state) #On retient l'état de la grille de sorte à le remettre à la fin de la fonction
-
-        for swap1,swap2 in possibles_moves :
-            non_mutable_state = self.hashable_state()
-            for cell1,cell2 in possibles_moves:
-                self.swap(cell1,cell2)
-                non_mutable_new_state = self.hashable_state()
-                if (non_mutable_state,non_mutable_new_state) not in g.edges or (non_mutable_new_state,non_mutable_state) not in g.edges: 
-                        g.add_edge(non_mutable_state,non_mutable_new_state)
-                self.swap(cell1,cell2) #on refait le changement
-
-            self.swap(swap1,swap2)
-            non_mutable_state = self.hashable_state()
- 
-        self.state = memory
-        return g 
-"""
 
 
                 

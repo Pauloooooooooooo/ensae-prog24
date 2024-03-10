@@ -10,7 +10,7 @@ from graph import Graph
 class Test_Get_Solution_Graph(unittest.TestCase):
     def test(self):
         s = Solver(2,2,[[2,4],[3,1]])
-        self.assertEqual(s.get_solution_graph(),[[1,2],[3,4]])
+        self.assertEqual(s.get_solution_graph(),[((0, 1), (1, 1)), ((0, 0), (0, 1))])
 
 if __name__ == '__main__':
     unittest.main()
