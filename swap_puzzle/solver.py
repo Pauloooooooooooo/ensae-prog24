@@ -1,5 +1,6 @@
 from grid import Grid
 import heapq
+import random
 
 directions=[(-1,0),(1,0),(0,1),(0,-1)]
 class Solver(Grid): 
@@ -12,7 +13,8 @@ class Solver(Grid):
         Ainsi, à chaque variable de type Solver, sera automatiquement associée une grille.
         """
         Grid.__init__(self,m,n,ini)
-    
+        self.barriers = []
+
     def final(self):
         return Grid(self.m,self.n)
 
@@ -118,7 +120,7 @@ class Solver(Grid):
                 move_close_to_x = [Solver.sumtuple(x,y) for y in directions]
             
                 for t in move_close_to_x:
-                    if self.legal_move(x,t) and (t,x) not in possible_moves:
+                    if (self.legal_move(x,t)) and ((t,x) not in possible_moves) and ((x,t) not in self.barriers) and ((t,x) not in self.barriers):
                         possible_moves.append((x,t))
         return possible_moves
 

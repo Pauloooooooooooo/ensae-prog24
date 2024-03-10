@@ -1,7 +1,8 @@
 from grid import Grid
 from solver import Solver
 from graph import Graph
-
+from game import Game
+"""
 g = Grid(2, 3)
 print(g)
 
@@ -13,7 +14,7 @@ print(file_name)
 
 
 S0 = Solver(2,2,[[2,4],[3,1]])
-
+"""
 
 S1 = Solver(4,2,[[5,2],[3,8],[1,6],[4,7]])
 #print(S1.get_solution())
@@ -36,7 +37,8 @@ deux nombres de sorte à ce que le nombre le plus petit des deux se retrouve ava
 cette condition dans la fonction legal_move
 mais ce n'est qu'une ébauche d'idée et je pense que l'on peut trouver un contre exemple facilement 
 """
-print(S5)
-print(S5.Astar_improved())
+#print(S4)
+#print(S4.Astar_improved())
 
-
+G = Game(3)
+print(G.resolve())

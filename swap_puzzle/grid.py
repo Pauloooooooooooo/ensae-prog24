@@ -5,7 +5,7 @@ This is the grid module. It contains the Grid class and its associated methods.
 import random
 import matplotlib.pyplot as plt 
 import copy
-
+directions=[(-1,0),(1,0),(0,1),(0,-1)]
 class Grid():
     """
     A class representing the grid from the swap puzzle. It supports rectangular grids. 
@@ -142,6 +142,23 @@ class Grid():
         On obtient un état mutable d'une grille pour les noeuds du graphe
         """
         return tuple([tuple(inner_list) for inner_list in self.state])
+
+    def create_barrier(self, diff):
+        sommets = []
+        barriers = []
+        if self.m == 1 or self.n == 1:
+            return barriers
+        for i in range(diff * 2):
+            x, y = random.randint(1,self.m), random.randint(1,self.n)
+            if not((x,y) in sommets):
+                sommets.append((x,y))
+                d = random.randint(0,3)
+                if self.legal_move((x,y),directions[d]) :
+                    xb, yb = Solver.sumtuple((x,y),directions[d])
+                    sommets.append((xb,yb))
+                    barriers.append(((x,y),(xb,yb)))
+                    barriers.append(((xb,yb),(x,y)))
+        return barriers
 
 
       
