@@ -7,7 +7,7 @@ from grid import Grid
 from solver import Solver
 from graph import Graph
 
-class Test_Swap(unittest.TestCase):
+class Test_Bfs(unittest.TestCase):
     def test_graph1(self):
         graph = Graph.graph_from_file("input/graph1.in")
         self.assertEqual(graph.bfs(1,15), [1,15])

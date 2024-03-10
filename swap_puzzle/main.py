@@ -44,4 +44,4 @@ mais ce n'est qu'une ébauche d'idée et je pense que l'on peut trouver un contr
 #G = Game(3)
 #print(G.resolve())
 
-print(S0.get_solution_graph())
+print(S0b.build_graph())

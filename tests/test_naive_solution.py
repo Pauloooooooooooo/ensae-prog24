@@ -6,7 +6,7 @@ import unittest
 from grid import Grid
 from solver import Solver
 
-class Test_Swap(unittest.TestCase):
+class Test_Naive_Solution(unittest.TestCase):
     def test_grid1(self):
         grid = Solver.grid_from_file("input/grid1.in")
         grid.get_solution()
