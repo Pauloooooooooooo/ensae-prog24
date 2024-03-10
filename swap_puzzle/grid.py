@@ -5,6 +5,10 @@ This is the grid module. It contains the Grid class and its associated methods.
 import random
 import matplotlib.pyplot as plt 
 import copy
+import pygame as pg 
+BLOCK_SIZE=200
+BLACK=(0,0,0)
+WHITE=(255,255,255)
 directions=[(-1,0),(1,0),(0,1),(0,-1)]
 class Grid():
     """
@@ -159,6 +163,66 @@ class Grid():
                     barriers.append(((x,y),(xb,yb)))
                     barriers.append(((xb,yb),(x,y)))
         return barriers
+
+    def griddisplay(self):
+        """
+        Crée un affichage de la grille avec Pygame et permet à l'utilisateur d'interagir pour déplacer les cases.
+        """
+        pg.init()
+        self.display = pg.display.set_mode((self.n * BLOCK_SIZE, self.m * BLOCK_SIZE))
+        self.display.fill(WHITE)
+        pg.display.set_caption("Swap Puzzle")
+        font = pg.font.Font(None, 25)
+        active_cell = None  
+        while True:
+            for event in pg.event.get():                  # On décide de quitter la fenêtre graphique
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.MOUSEBUTTONDOWN:          # on obtient les coordonnées de la case cliquée
+                    mouse_x, mouse_y = pg.mouse.get_pos()
+                    colonne = mouse_x // BLOCK_SIZE
+                    ligne = mouse_y // BLOCK_SIZE
+                    if 0 <= ligne < self.m and 0 <= colonne < self.n:
+                        if active_cell is None:
+                            active_cell = (ligne, colonne)                                                  # Si aucune case n'est sélectionnée, on sélectionne celle-ci
+                        else:           
+                            self.swapdisplay(active_cell, (ligne, colonne))
+                            active_cell= None                                                         # on rénitialise la cellule active
+            self.display.fill(WHITE)                                                                # on redéssine la grille avec les numéros 
+            for i in range(self.m):
+                for j in range(self.n):
+                    left = j * BLOCK_SIZE
+                    top = i * BLOCK_SIZE
+                    pg.draw.rect(self.display, BLACK, pg.Rect(left, top, BLOCK_SIZE, BLOCK_SIZE), 5)
+                    mid_top = top + (BLOCK_SIZE) / 2
+                    mid_left = left + (BLOCK_SIZE) / 2
+                    text = font.render(str(self.state[i][j]), True, BLACK)
+                    self.display.blit(text, (mid_left - text.get_width() // 2, mid_top - text.get_height() // 2))
+            pg.display.flip()
+
+    
+    def swapdisplay(self, coord_case1, coord_case2):
+        font = pg.font.Font(None, 36) 
+        message = font.render('Swap non légal !', True, (255, 255, 255))
+        i1, j1 = coord_case1
+        i2, j2 = coord_case2
+        self.state[i1][j1], self.state[i2][j2] = self.state[i2][j2], self.state[i1][j1]
+        if ((i1==i2 and abs(j2-j1)==1) or (j1==j2 and abs(i2-i1)==1)):
+            self.display.fill(WHITE)                                # on redéssine la grille ue fois l'échange fait
+            font = pg.font.Font(None, 25)
+            for i in range(self.m):
+                for j in range(self.n):
+                    left = j * BLOCK_SIZE
+                    top = i * BLOCK_SIZE
+                    pg.draw.rect(self.display, BLACK, pg.Rect(left, top, BLOCK_SIZE, BLOCK_SIZE), 5)
+                    mid_top = top + (BLOCK_SIZE) / 2
+                    mid_left = left + (BLOCK_SIZE) / 2
+                    text = font.render(str(self.state[i][j]), True, BLACK)
+                    self.display.blit(text, (mid_top, mid_left))
+            pg.display.flip()
+        else :
+            self.display.blit(message,(100,100))
 
 
       
