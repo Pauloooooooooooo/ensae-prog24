@@ -1,6 +1,10 @@
 from grid import Grid
+from graph import Graph
 import heapq
 import random
+import copy
+from itertools import permutations
+import numpy as np
 
 directions=[(-1,0),(1,0),(0,1),(0,-1)]
 class Solver(Grid): 
@@ -14,6 +18,34 @@ class Solver(Grid):
         """
         Grid.__init__(self,m,n,ini)
         self.barriers = []
+
+    @classmethod
+    def grid_from_file(cls, file_name): 
+        """
+        Creates a grid object from class Grid, initialized with the information from the file file_name.
+        
+        Parameters: 
+        -----------
+        file_name: str
+            Name of the file to load. The file must be of the format: 
+            - first line contains "m n" 
+            - next lines contain n integers that represent the state of the corresponding cell
+
+        Output: 
+        -------
+        grid: Grid
+            The grid
+        """
+        with open(file_name, "r") as file:
+            m, n = map(int, file.readline().split())
+            initial_state = [[] for i_line in range(m)]
+            for i_line in range(m):
+                line_state = list(map(int, file.readline().split()))
+                if len(line_state) != n: 
+                    raise Exception("Format incorrect")
+                initial_state[i_line] = line_state
+            grid = Solver(m, n, initial_state)
+        return grid
 
     def final(self):
         return Grid(self.m,self.n)
@@ -77,6 +109,8 @@ class Solver(Grid):
         """_
         On peut se convaincre grâce à des exemples simples que la longueur de chemins obtenue n'est pas optimale.
         """
+    def tuple_to_list(t):
+        return list(list(e) for e in t)
 
     def legal_move(self,x,y):
         i1,j1 = x
@@ -94,10 +128,9 @@ class Solver(Grid):
         """
         l1 = [list(elt) for elt in state1]
         l2 = [list(elt) for elt in state2]
-        g1 = Grid(len(state1),len(state1[0]),l1)
-        g2 = Grid(len(state2),len(state2[0]),l2)
-        solv = Solver(g1)
-        possible_moves = solv.possible_moves()
+        g1 = Solver(len(state1),len(state1[0]),l1)
+        g2 = Solver(len(state2),len(state2[0]),l2)
+        possible_moves = g1.possible_moves()
         for cell1,cell2 in possible_moves:
             g1.swap(cell1,cell2)
             if np.array_equal(g1.state,g2.state):
@@ -124,33 +157,41 @@ class Solver(Grid):
                         possible_moves.append((x,t))
         return possible_moves
 
-    def create_graph(self):
+    def generate_possible_states(self):
         """
-        On crée un graphe où les noeuds représentent des états de la grille et il exitse une arête si les deux états
-        son reliés par un swap legal
-        
-        Sortie : Objet Graph
+        Generates all possible states of the grid.
+
+        Returns:
+        --------
+        states: set
+            A set containing all possible states of the grid.
         """
+        states = set()  # Initialize an empty set to store unique grid states
+        cells = [(i, j) for i in range(self.m) for j in range(self.n)]  # Get all cell positions
+        permutations_cells = permutations(cells) # Generate all permutations of cell positions
+        # For each permutation, create a grid state and add it to the set of states
+        for perm in permutations_cells:
+            new_state = [[0 for _ in range(self.n)] for _ in range(self.m)]  # Initialize a new grid state
+            for index, (i, j) in enumerate(perm):  # Assign numbers to cells based on the permutation
+                new_state[i][j] = index + 1
+            states.add(tuple(map(tuple, new_state)))  # Add the new state to the set of states
+        return states
+    
+    def build_graph(self):
         g = Graph()
-        possibles_moves = self.possible_moves()
-        memory = copy.deepcopy(self.state) #On retient l'état de la grille de sorte à le remettre à la fin de la fonction
+        all_states = self.generate_possible_states()
+        for state in all_states:
+            l = Solver.tuple_to_list(state)
+            s = Solver(len(l),len(l[0]),l)
+            previous = s.hashable_state()
+            moves = s.possible_moves()
+            for c1, c2 in moves:
+                s.swap(c1,c2)
+                g.add_edge(previous,s.hashable_state())
+                s.swap(c1,c2)
+        return g
 
-        for swap1,swap2 in possibles_moves :
-            non_mutable_state = self.hashable_state()
-            for cell1,cell2 in possibles_moves:
-                self.swap(cell1,cell2)
-                non_mutable_new_state = self.hashable_state()
-                if (non_mutable_state,non_mutable_new_state) not in g.edges or (non_mutable_new_state,non_mutable_state) not in g.edges: 
-                        g.add_edge(non_mutable_state,non_mutable_new_state)
-                self.swap(cell1,cell2) #on refait le changement
-
-            self.swap(swap1,swap2)
-            non_mutable_state = self.hashable_state()
-        
-        self.state = memory
-        return g 
-
-    def get_solution_graphe(self):
+    def get_solution_graph(self):
         """
         On trouve le chemin le plus court dans le graphe construit précedemment
         On récupére la liste des swaps effectués 
@@ -167,7 +208,7 @@ class Solver(Grid):
         #On va maintenant récupérer la séquence de swaps qui ont été faits à partir de cette liste
         chemin = []
         for i in range(0,len(etats_successifs)-1):
-            state1,state2 = etats_succesifs[i],etats_successifs[i+1]
+            state1,state2 = etats_successifs[i],etats_successifs[i+1]
             move_needed = Solver.move_needed(state1,state2)
             chemin.append(move_needed)
         return chemin 
@@ -241,7 +282,33 @@ class Solver(Grid):
 
 
 
+"""
+    def create_graph(self):
+      
+        On crée un graphe où les noeuds représentent des états de la grille et il exitse une arête si les deux états
+        son reliés par un swap legal
+        
+        Sortie : Objet Graph
+      
+        g = Graph()
+        possibles_moves = self.generate_possible_states()
+        memory = copy.deepcopy(self.state) #On retient l'état de la grille de sorte à le remettre à la fin de la fonction
 
+        for swap1,swap2 in possibles_moves :
+            non_mutable_state = self.hashable_state()
+            for cell1,cell2 in possibles_moves:
+                self.swap(cell1,cell2)
+                non_mutable_new_state = self.hashable_state()
+                if (non_mutable_state,non_mutable_new_state) not in g.edges or (non_mutable_new_state,non_mutable_state) not in g.edges: 
+                        g.add_edge(non_mutable_state,non_mutable_new_state)
+                self.swap(cell1,cell2) #on refait le changement
+
+            self.swap(swap1,swap2)
+            non_mutable_state = self.hashable_state()
+ 
+        self.state = memory
+        return g 
+"""
 
 
                 

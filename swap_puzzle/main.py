@@ -10,11 +10,12 @@ data_path = "input/"
 file_name = data_path + "grid1.in"
 
 print(file_name)
-
+"""
 
 
 S0 = Solver(2,2,[[2,4],[3,1]])
-"""
+
+S0b = Solver(2,3,[[3,5,1],[6,2,4]])
 
 S1 = Solver(4,2,[[5,2],[3,8],[1,6],[4,7]])
 #print(S1.get_solution())
@@ -40,5 +41,7 @@ mais ce n'est qu'une ébauche d'idée et je pense que l'on peut trouver un contr
 #print(S4)
 #print(S4.Astar_improved())
 
-G = Game(3)
-print(G.resolve())
+#G = Game(3)
+#print(G.resolve())
+
+print(S0.get_solution_graph())

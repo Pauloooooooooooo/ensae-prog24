@@ -5,7 +5,8 @@ This is the grid module. It contains the Grid class and its associated methods.
 import random
 import matplotlib.pyplot as plt 
 import copy
-import pygame as pg 
+
+#import pygame as pg 
 BLOCK_SIZE=200
 BLACK=(0,0,0)
 WHITE=(255,255,255)

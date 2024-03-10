@@ -112,10 +112,10 @@ class Graph:
         else:                                 #il ne nous reste plus qu'à restituer le chemin le plus court grâce au dictionnaire p confectionné ci-dessus
             chemin = [arr]
             inter = arr
-            while inter != arr:
+            while inter != dep:
                 inter = p[inter]
                 chemin.append(inter)
-            return chemin
+            return chemin[::-1]
     
 
     @classmethod
