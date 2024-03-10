@@ -142,7 +142,7 @@ class Solver(Grid):
     
     def possible_moves(self):
         """
-        On va récupèrer tout les mouvement possibles à partir d'une grille.
+        On va récupérer tous les mouvement possibles à partir d'une grille.
         
         On sait qu'a chaque étape, on a au total (4*2 + 2*(m-2)*3 + 2*(n-2)*3 + 4*(m-2)(n-2))/2 swaps possibles 
         Sortie : [((i1, j1), (i2, j2)), ((i1', j1'), (i2', j2')),.....]
@@ -151,7 +151,7 @@ class Solver(Grid):
         for i in range(0,self.m):
             for j in range(0,self.n):
                 x = (i,j)
-                move_close_to_x = [Solver.sumtuple(x,y) for y in directions]
+                move_close_to_x = [Solver.sumtuple(x,y) for y in directions] #directions=[(-1,0),(1,0),(0,1),(0,-1)]
             
                 for t in move_close_to_x:
                     if (self.legal_move(x,t)) and ((t,x) not in possible_moves) and ((x,t) not in self.barriers) and ((t,x) not in self.barriers):
@@ -160,22 +160,17 @@ class Solver(Grid):
 
     def generate_possible_states(self):
         """
-        Generates all possible states of the grid.
-
-        Returns:
-        --------
-        states: set
-            A set containing all possible states of the grid.
+        On énumère tous les états possibles de la grille
         """
-        states = set()  # Initialize an empty set to store unique grid states
-        cells = [(i, j) for i in range(self.m) for j in range(self.n)]  # Get all cell positions
-        permutations_cells = permutations(cells) # Generate all permutations of cell positions
-        # For each permutation, create a grid state and add it to the set of states
+        states = set()  # On initialise un ensemble qui contiendra tous les états de la grille
+        cells = [(i, j) for i in range(self.m) for j in range(self.n)]  # on énumère toutes les coordonnées existantes
+        permutations_cells = permutations(cells) #on génère toutes les permutations 
+        # pour chaque permutation, on ajoute un nouvel état de grille
         for perm in permutations_cells:
-            new_state = [[0 for _ in range(self.n)] for _ in range(self.m)]  # Initialize a new grid state
-            for index, (i, j) in enumerate(perm):  # Assign numbers to cells based on the permutation
+            new_state = [[0 for _ in range(self.n)] for _ in range(self.m)] 
+            for index, (i, j) in enumerate(perm):  
                 new_state[i][j] = index + 1
-            states.add(tuple(map(tuple, new_state)))  # Add the new state to the set of states
+            states.add(tuple(map(tuple, new_state)))  # on ajoute le nouvel état dans l'ensemble
         return states
     
     def build_graph(self):
@@ -258,6 +253,10 @@ class Solver(Grid):
         return dist
 
     def manhattan_distance(self):
+        """ 
+        Distance de Manhattan afin de remplacer la première qui a été utilisée dans A*, dans le but d'optimiser l'algorithme 
+        et de le faire fonctionner sur des grilles 4x4, 5x5...
+        """
         d = 0
         for i in range(len(self.state)):
             for j in range(len(self.state[0])):
@@ -291,24 +290,20 @@ class Solver(Grid):
         return chemin, curr.state
 
     def Astar_improved(self):
-        curr=self
-        chemin=[]
-        cheminb =  []
-        vus=[curr.hashable_state()]
+        curr=self           #objet Solver qu'on étudiera à chaque tour de boucle
+        chemin=[]           #liste des swaps effectués
+        vus=[curr.hashable_state()]  #on notera sous forme de tuple les grilles qui ont déjà été visitées
         while  curr.is_sorted() == False:
-            h=[]
+            h=[]    #liste utilisée pour heapq
             cpt = 0 #numéro d'ajout pour éviter les problèmes d'égalité et de comparaison entre Grille dans l'utilisation de heapq
-            for elt in curr.possible_moves():
+            for elt in curr.possible_moves():   #on parcourt tous les mouvements possibles à partir de la grille actuellement étudiée
                 cpt += 1
                 L = [[curr.state[i][j] for j in range(len(curr.state[0]))] for i in range(len(curr.state))]
                 neighbor = Solver(curr.m, curr.n, L)
-                #neighbor = Solver(curr.m, curr.n, curr.state[:][:])
-                neighbor.swap(elt[0],elt[1])
+                neighbor.swap(elt[0],elt[1])         
                 if not (neighbor.hashable_state() in vus):
-                    heapq.heappush(h,(neighbor.manhattan_distance(),cpt,neighbor,elt))    #il compare non pas seulement le premier, mais aussi le deuxieme elem qui est un Solver 
-                #print(h), print(neighbor.state)
-            new=heapq.heappop(h)
-            #print(new[2].state)
+                    heapq.heappush(h,(neighbor.manhattan_distance(),cpt,neighbor,elt))     #on compare les objets Solver non pas seulement sur la distance de Manhattan,
+            new=heapq.heappop(h)                                                           #mais également sur le cpt pour éviter les problèmes d'égalité
             vus.append(new[2].hashable_state())
             chemin.append(new[3])
             curr=new[2]

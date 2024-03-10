@@ -149,15 +149,19 @@ class Grid():
         return tuple([tuple(inner_list) for inner_list in self.state])
 
     def create_barrier(self, diff):
+        """ 
+        Créer une barrière consiste pour une grille à retenir une liste de swaps qui seront interdits dans le jeu et donc
+        enlevés des mouvements possibles
+        """
         sommets = []
         barriers = []
-        if self.m == 1 or self.n == 1:
-            return barriers
+        if self.m == 1 or self.n == 1:  #on vérifie que les grilles ne soient pas qu'une ligne ou une colonne, auquel cas le jeu 
+            return barriers             #serait bloqué avec l'ajout d'une barrière
         for i in range(diff * 2):
             x, y = random.randint(1,self.m), random.randint(1,self.n)
-            if not((x,y) in sommets):
+            if not((x,y) in sommets):           #on choisit la case à laquelle on adjoint une barrière
                 sommets.append((x,y))
-                d = random.randint(0,3)
+                d = random.randint(0,3)         #on tire au hasard la direction qui sera bloquée (gauche, droite, haut, bas)
                 if self.legal_move((x,y),directions[d]) :
                     xb, yb = Solver.sumtuple((x,y),directions[d])
                     sommets.append((xb,yb))
